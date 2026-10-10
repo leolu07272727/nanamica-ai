@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>nanamica.ai 設定</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      width: 320px; padding: 20px;
+      background: #fff; color: #111;
+    }
+    .header { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+    .logo {
+      width: 28px; height: 28px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      border-radius: 7px; display: flex; align-items: center;
+      justify-content: center; font-size: 14px; color: #fff;
+    }
+    h1 { font-size: 15px; font-weight: 600; color: #111; }
+    p.subtitle { font-size: 11px; color: #999; margin-top: 2px; }
+
+    .section {
+      background: #fafafa; border: 1px solid #e5e5e5;
+      border-radius: 10px; padding: 14px; margin-bottom: 12px;
+    }
+    .section-title { font-size: 11px; color: #888; margin-bottom: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* Mode toggle */
+    .mode-row { display: flex; gap: 6px; margin-bottom: 12px; }
+    .mode-btn {
+      flex: 1; padding: 6px; border: 1px solid #e0e0e0; border-radius: 7px;
+      text-align: center; cursor: pointer; font-size: 11px; color: #888; transition: all 0.15s;
+    }
+    .mode-btn:hover { border-color: #aaa; color: #333; }
+    .mode-btn.active { border-color: #6366f1; background: #f0f0ff; color: #6366f1; font-weight: 600; }
+    .mode-panel { display: none; }
+    .mode-panel.active { display: block; }
+    .web-info { font-size: 11px; color: #888; margin-bottom: 8px; line-height: 1.5; }
+    .web-info a { color: #6366f1; text-decoration: none; }
+
+    /* Provider tabs */
+    .provider-tabs { display: flex; gap: 6px; margin-bottom: 12px; }
+    .provider-tab {
+      flex: 1; padding: 7px 4px; border: 1px solid #e0e0e0;
+      border-radius: 7px; text-align: center; cursor: pointer;
+      font-size: 12px; color: #888; transition: all 0.15s;
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+    }
+    .provider-tab .icon { font-size: 16px; }
+    .provider-tab .name { font-size: 10px; }
+    .provider-tab:hover { border-color: #aaa; color: #333; }
+    .provider-tab.active { border-color: #6366f1; background: #f0f0ff; color: #6366f1; }
+
+    /* Provider panels */
+    .provider-panel { display: none; }
+    .provider-panel.active { display: block; }
+
+    label { display: block; font-size: 12px; color: #888; margin-bottom: 6px; }
+    input[type="password"] {
+      width: 100%; background: #fff; border: 1px solid #ddd;
+      border-radius: 6px; padding: 8px 10px; color: #111;
+      font-size: 13px; outline: none; transition: border-color 0.2s;
+    }
+    input:focus { border-color: #6366f1; }
+
+    .model-row { display: flex; gap: 6px; flex-wrap: wrap; }
+    .model-option {
+      flex: 1; min-width: 60px; padding: 7px 4px; border: 1px solid #ddd;
+      border-radius: 6px; text-align: center; cursor: pointer;
+      font-size: 10px; color: #888; transition: all 0.2s;
+    }
+    .model-option:hover { border-color: #6366f1; color: #333; }
+    .model-option.active { border-color: #6366f1; background: #f0f0ff; color: #6366f1; }
+    .model-option .name { font-weight: 600; display: block; margin-bottom: 1px; font-size: 11px; }
+    .model-option .desc { font-size: 9px; color: #bbb; }
+    .model-option.active .desc { color: #8b8fd4; }
+
+    button.save {
+      width: 100%; padding: 10px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      border: none; border-radius: 8px; color: #fff;
+      font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.2s;
+    }
+    button.save:hover { opacity: 0.85; }
+    .status { text-align: center; font-size: 12px; margin-top: 10px; height: 16px; color: #16a34a; }
+    .status.error { color: #ef4444; }
+    .tip { font-size: 11px; color: #aaa; margin-top: 6px; line-height: 1.5; }
+    a { color: #6366f1; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .toggle-row { display: flex; align-items: center; justify-content: space-between; }
+    .toggle-label { font-size: 13px; color: #333; }
+    .toggle { position: relative; width: 36px; height: 20px; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; inset: 0; background: #ddd; border-radius: 20px; cursor: pointer; transition: 0.2s; }
+    .slider:before { content: ""; position: absolute; width: 14px; height: 14px; left: 3px; bottom: 3px; background: #fff; border-radius: 50%; transition: 0.2s; }
+    input:checked + .slider { background: #6366f1; }
+    input:checked + .slider:before { transform: translateX(16px); }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">✦</div>
+    <div>
+      <h1>nanamica.ai</h1>
+      <p class="subtitle">多模型網頁 AI 助手</p>
+    </div>
+  </div>
+
+  <!-- Provider 選擇 -->
+  <div class="section">
+    <div class="section-title">AI 提供者</div>
+
+    <!-- API / 帳號 模式切換 -->
+    <div class="mode-row">
+      <div class="mode-btn active" data-mode="api">API Key</div>
+      <div class="mode-btn" data-mode="web">帳號登入</div>
+    </div>
+
+    <!-- API Key 模式 -->
+    <div class="mode-panel active" id="mode-api">
+      <div class="provider-tabs">
+      <div class="provider-tab active" data-provider="claude">
+        <span class="icon">🤖</span><span class="name">Claude</span>
+      </div>
+      <div class="provider-tab" data-provider="openai">
+        <span class="icon">⚡</span><span class="name">OpenAI</span>
+      </div>
+      <div class="provider-tab" data-provider="gemini">
+        <span class="icon">💎</span><span class="name">Gemini</span>
+      </div>
+    </div>
+
+    <!-- Claude -->
+    <div class="provider-panel active" id="panel-claude">
+      <label>API Key</label>
+      <input type="password" id="claudeKey" placeholder="sk-ant-api03-…" />
+      <p class="tip"><a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a></p>
+      <br>
+      <label>模型</label>
+      <div class="model-row" id="claude-models">
+        <div class="model-option active" data-model="claude-haiku-4-5-20251001"><span class="name">Haiku</span><span class="desc">最快</span></div>
+        <div class="model-option" data-model="claude-sonnet-4-6"><span class="name">Sonnet</span><span class="desc">平衡</span></div>
+        <div class="model-option" data-model="claude-opus-4-7"><span class="name">Opus</span><span class="desc">最強</span></div>
+      </div>
+    </div>
+
+    <!-- OpenAI -->
+    <div class="provider-panel" id="panel-openai">
+      <label>API Key</label>
+      <input type="password" id="openaiKey" placeholder="sk-…" />
+      <p class="tip"><a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com</a></p>
+      <br>
+      <label>模型</label>
+      <div class="model-row" id="openai-models">
+        <div class="model-option active" data-model="gpt-4o-mini"><span class="name">4o mini</span><span class="desc">最快</span></div>
+        <div class="model-option" data-model="gpt-4o"><span class="name">4o</span><span class="desc">平衡</span></div>
+        <div class="model-option" data-model="o4-mini"><span class="name">o4 mini</span><span class="desc">推理</span></div>
+      </div>
+    </div>
+
+    <!-- Gemini -->
+    <div class="provider-panel" id="panel-gemini">
+      <label>API Key</label>
+      <input type="password" id="geminiKey" placeholder="AIza…" />
+      <p class="tip"><a href="https://aistudio.google.com/app/apikey" target="_blank">aistudio.google.com</a>（免費）</p>
+      <br>
+      <label>模型</label>
+      <div class="model-row" id="gemini-models">
+        <div class="model-option active" data-model="gemini-2.5-flash-lite"><span class="name">2.5 Lite</span><span class="desc">最快</span></div>
+        <div class="model-option" data-model="gemini-2.5-flash"><span class="name">2.5 Flash</span><span class="desc">推薦</span></div>
+        <div class="model-option" data-model="gemini-2.5-pro"><span class="name">2.5 Pro</span><span class="desc">最強</span></div>
+      </div>
+    </div>
+    </div><!-- end mode-api -->
+
+    <!-- 帳號登入模式 -->
+    <div class="mode-panel" id="mode-web">
+      <p class="web-info">需要在瀏覽器保持登入狀態，插件會借用你的帳號發送請求。</p>
+      <div class="provider-tabs" id="web-provider-tabs">
+        <div class="provider-tab active" data-web-provider="chatgpt-web">
+          <span class="icon">⚡</span><span class="name">ChatGPT</span>
+        </div>
+        <div class="provider-tab" data-web-provider="claude-web">
+          <span class="icon">🤖</span><span class="name">Claude</span>
+        </div>
+        <div class="provider-tab" data-web-provider="gemini-web">
+          <span class="icon">💎</span><span class="name">Gemini</span>
+        </div>
+      </div>
+      <div id="web-status" style="font-size:11px;color:#888;margin-top:6px;"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="toggle-row">
+      <span class="toggle-label">啟用插件</span>
+      <label class="toggle">
+        <input type="checkbox" id="enabled" checked />
+        <span class="slider"></span>
+      </label>
+    </div>
+  </div>
+
+  <button class="save" id="saveBtn">儲存設定</button>
+  <div class="status" id="status"></div>
+  <div style="font-size:10px;color:#999;margin-top:6px;line-height:1.5">
+    ⚠ API Key 以明文存於本機 chrome.storage——僅在自己的電腦使用,
+    共用電腦請勿儲存;建議用有額度上限的 key。
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
